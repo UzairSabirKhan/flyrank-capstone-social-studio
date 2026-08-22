@@ -1,0 +1,2 @@
+# Social Media Studio
+Change one blog post into a full social campaign. This system makes one post version for each platform. A person approves each version. A scheduler publishes each approved version one time, and only one time.
