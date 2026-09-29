@@ -11,7 +11,9 @@
     "start:worker": "tsx src/worker.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:migrate": "prisma migrate dev",
+    "db:test:migrate": "cross-env DATABASE_URL=postgresql://studio:studio@localhost:5432/studio_test prisma migrate deploy"
   },
   "repository": {
     "type": "git",
@@ -26,20 +28,28 @@
   "homepage": "https://github.com/UzairSabirKhan/flyrank-capstone-social-studio#readme",
   "type": "module",
   "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "@prisma/client": "^6.19.3",
     "dotenv": "^18.0.4",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "helmet": "^8.3.0",
+    "jsdom": "^29.1.1",
     "pino": "^10.3.1",
+    "turndown": "^7.2.4",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.3",
     "@types/supertest": "^7.2.1",
+    "@types/turndown": "^5.0.6",
+    "cross-env": "^10.1.0",
     "eslint": "^10.11.0",
     "pino-pretty": "^13.1.3",
     "prettier": "^3.9.9",
+    "prisma": "^6.19.3",
     "supertest": "^7.3.0",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",

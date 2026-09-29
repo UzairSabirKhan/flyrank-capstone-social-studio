@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SourceType {
+  url
+  markdown
+}
+
+enum VariantStatus {
+  draft
+  approved
+  rejected
+  published
+}
+
+model Post {
+  id           String     @id @default(uuid())
+  sourceType   SourceType
+  sourceUrl    String?
+  title        String
+  bodyMarkdown String
+  createdAt    DateTime   @default(now())
+  variants     Variant[]
+}
+
+model Variant {
+  id        String        @id @default(uuid())
+  postId    String
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  platform  String
+  text      String
+  status    VariantStatus @default(draft)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([postId, platform])
+}
