@@ -60,6 +60,37 @@ model Slot {
   claimedAt      DateTime?
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+  attempts       PublishAttempt[]
 
   @@index([status, scheduledAt])
+}
+
+enum AttemptResult {
+  started
+  published
+  failed
+  unknown
+}
+
+model PublishAttempt {
+  id          String        @id @default(uuid())
+  slotId      String
+  slot        Slot          @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  startedAt   DateTime      @default(now())
+  finishedAt  DateTime?
+  result      AttemptResult @default(started)
+  externalId  String?
+  externalUrl String?
+  error       String?
+
+  @@index([slotId])
+}
+
+model MockPost {
+  id             String   @id @default(uuid())
+  platform       String
+  text           String
+  preview        String
+  idempotencyKey String   @unique
+  createdAt      DateTime @default(now())
 }

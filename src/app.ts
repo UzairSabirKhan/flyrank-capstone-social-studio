@@ -6,8 +6,16 @@ import { logger } from './lib/logger';
 import { postsRouter } from './modules/posts/routes';
 import { variantsRouter } from './modules/variants/routes';
 import { slotsRouter } from './modules/scheduling/routes';
+import type { SocialPublisher } from './adapters/SocialPublisher';
+import { MockXPublisher } from './adapters/mock';
+import { createPublishRouter } from './modules/scheduling/publishRoutes';
+import { mockPostsRouter } from './modules/history/mockPosts';
 
-export function createApp() {
+export interface AppDeps {
+  publisher: SocialPublisher;
+}
+
+export function createApp(deps: AppDeps = { publisher: new MockXPublisher() }) {
   const app = express();
   app.use(helmet());
   app.use(express.json({ limit: '200kb' }));
@@ -20,7 +28,8 @@ export function createApp() {
   app.use('/posts', postsRouter);
   app.use('/variants', variantsRouter);
   app.use('/slots', slotsRouter);
-  
+  app.use('/slots', createPublishRouter(deps.publisher));
+  app.use('/mock-posts', mockPostsRouter);
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
   });

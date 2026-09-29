@@ -8,3 +8,5 @@ coverage/
 .DS_Store
 /src/generated/prisma
 resource/
+requests/schedule.json
+requests/generate.json

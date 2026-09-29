@@ -55,7 +55,7 @@ export async function getSlot(id: string) {
   const slot = await prisma.slot.findUnique({
     where: { id },
     include: {
-    //   attempts: { orderBy: { startedAt: 'asc' } },
+      attempts: { orderBy: { startedAt: 'asc' } },
       variant: { select: { id: true, platform: true, status: true } },
     },
   });

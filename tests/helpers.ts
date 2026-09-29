@@ -10,6 +10,7 @@ database, not the application code, should enforce uniqueness. Teams that skip t
 with duplicate posts and angry customers.`;
 
 export async function resetDb() {
+  await prisma.mockPost.deleteMany();
   await prisma.post.deleteMany(); // cascades to variants, slots, attempts
 }
 
