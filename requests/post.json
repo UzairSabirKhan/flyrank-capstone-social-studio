@@ -1,0 +1,5 @@
+{
+  "sourceType": "markdown",
+  "title": "Why Idempotency Matters",
+  "markdown": "Publishing systems retry on failure. A retry after a timeout must never create a second post. Idempotency keys let the server recognise a repeated request and ignore it. The database should enforce uniqueness, not application code."
+}

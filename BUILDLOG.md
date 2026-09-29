@@ -1,1 +1,2 @@
 Used Claude to plan the stack and Phase 0 setup. I verified each command myself.
+Claude proposed pinning Prisma 6, template-based generators, and an SSRF check on every redirect hop. I read each file and ran the tests. Handled a few errors.
