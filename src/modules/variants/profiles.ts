@@ -36,3 +36,7 @@ export const PROFILES: Record<Platform, ConstraintProfile> = {
     bannedPhrases: BANNED,
   },
 };
+
+export function isPlatform(value: string): value is Platform {
+  return (PLATFORMS as readonly string[]).includes(value);
+}

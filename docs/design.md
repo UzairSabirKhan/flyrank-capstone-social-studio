@@ -21,9 +21,17 @@ under retries and worker crashes.
 | MockPost | id, platform, text, preview, createdAt | What mock adapters would post. |
 
 ## 4. Variant status flow
-draft -> approved -> published
-draft -> rejected\
-Only `approved` variants can be scheduled. An edit re-validates the text and sends the variant back to `draft`.
+| Action | Allowed from | Result | Notes |
+|---|---|---|---|
+| approve | draft | approved | Text is re-validated against the profile first |
+| reject | draft, approved | rejected | Blocked while the variant has an open slot |
+| edit (PATCH) | draft, approved, rejected | draft | Re-validates; blocked while an open slot exists |
+| (worker) publish | approved | published | Phase 4-5 |
+
+Only `approved` variants can be scheduled. Scheduling anything else returns 409.
+An "open" slot is one in status scheduled or publishing. A variant can have at most
+one open slot, enforced by a partial unique index in Postgres. Cancelling a
+scheduled slot (DELETE /slots/:id) frees the variant for edit or reject.
 
 ## 5. API surface
 Phase 2: POST /posts, GET /posts/:id, POST /posts/:id/variants (manual create),

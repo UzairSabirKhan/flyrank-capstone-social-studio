@@ -4,6 +4,8 @@ import rateLimit from 'express-rate-limit';
 import { HttpError } from './lib/errors';
 import { logger } from './lib/logger';
 import { postsRouter } from './modules/posts/routes';
+import { variantsRouter } from './modules/variants/routes';
+import { slotsRouter } from './modules/scheduling/routes';
 
 export function createApp() {
   const app = express();
@@ -16,7 +18,9 @@ export function createApp() {
   });
 
   app.use('/posts', postsRouter);
-
+  app.use('/variants', variantsRouter);
+  app.use('/slots', slotsRouter);
+  
   app.use((_req, res) => {
     res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Route not found' } });
   });
