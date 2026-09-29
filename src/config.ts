@@ -5,9 +5,8 @@ const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
   DATABASE_URL: z.string().url(),
-  PUBLISHER: z.enum(['telegram', 'mock_x', 'mock_linkedin']).default('mock_x'),
-  TELEGRAM_BOT_TOKEN: z.string().optional(),
-  TELEGRAM_CHAT_ID: z.string().optional(),
+  PUBLISHER: z.enum(['discord', 'mock_x', 'mock_linkedin']),
+  DISCORD_WEBHOOK_URL: z.string().url().optional(),
 });
 
 export type Config = z.infer<typeof schema>;
