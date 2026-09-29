@@ -1,0 +1,1 @@
+Used Claude to plan the stack and Phase 0 setup. I verified each command myself.
