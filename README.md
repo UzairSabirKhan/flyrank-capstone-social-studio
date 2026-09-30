@@ -29,6 +29,46 @@ docker compose exec api npx tsx scripts/seed.ts
 Then open http://localhost:3000/history/view. Set `PUBLISHER=discord` (plus the webhook URL and
 server ID) in `.env` to publish for real. `PUBLISHER=mock_x` or `mock_linkedin` uses the mocks.
 
+## Verify it (the six probes)
+
+Start the stack first (see "Run it"). With the default `PUBLISHER=mock_x`, no external account is needed.
+
+**Probes 1–4** (ingest and generate, blocked variant, refused schedule, scheduled publish):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File requests\probes.ps1
+```
+
+This prints PASS or FAIL per probe. It waits up to 4 minutes for the worker, which sweeps once a
+minute. Then open http://localhost:3000/history/view to see the attempt.
+
+**Probe 5** (kill the worker mid-publish, restart, exactly one post):
+
+```powershell
+docker compose stop worker
+docker compose exec api npx tsx scripts/prove-crash-safety.ts
+docker compose start worker
+```
+
+It seeds 5 slots, hard-kills a worker after a post is sent but before it is recorded, restarts it,
+and ends with `PASS: exactly one post per slot, zero duplicates`.
+
+**Probe 6** (swap the adapter by configuration): change `PUBLISHER` in `.env` (for example
+`mock_x` to `mock_linkedin`), run `docker compose up -d`, then run `probes.ps1` again. The post lands
+in `/mock-posts` and `/history/view`. No code changes.
+
+**Real Discord target (Probe 4 against the live service).** Create a webhook in your own server
+(Channel settings, Integrations, Webhooks, Copy URL), turn on Developer Mode to copy the server ID,
+then set these in `.env` and run `docker compose up -d`:
+
+```
+PUBLISHER=discord
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/<id>/<token>
+DISCORD_GUILD_ID=<server id>
+```
+
+The history row then links to the live message.
+
 ## How duplicates are prevented
 
 1. Claim: one atomic `UPDATE ... WHERE status='scheduled'`. Only one caller wins.
