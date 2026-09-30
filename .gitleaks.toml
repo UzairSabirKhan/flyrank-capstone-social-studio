@@ -1,0 +1,8 @@
+title = "studio gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Class names containing 'LinkedIn' trip the linkedin-client-id rule"
+regexes = ['''Mock(LinkedIn|X)Publisher''']

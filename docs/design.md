@@ -74,7 +74,7 @@ the `PUBLISHER` env var through a registry.
 
 - Idempotency key derived from variant + slot, with a UNIQUE constraint in Postgres.
 - Worker claims a slot with one atomic `UPDATE ... WHERE status='scheduled' RETURNING`.
-- Queue: pg-boss (jobs live in the same Postgres). A reconciler re-enqueues due or stuck slots.
+- pg-boss carries a per-minute cron sweep and per-slot jobs. The Slot table is the source of truth. Retries are DB-driven (max 3 attempts, 30s then 2min backoff). Stale publishing slots are recovered: re-published with the same key if the adapter dedupes, otherwise flagged unknown for a human.
 - Attempt states: pending -> publishing -> published | failed.
 - Two partial unique indexes: one open slot per variant, one published attempt per slot
 - Unknown outcomes are never retried against adapters where dedupesByKey is false.
@@ -85,3 +85,4 @@ the `PUBLISHER` env var through a registry.
 - Discord webhooks have no idempotency key; the atomic claim is the protection; residual risk is a crash between send and record.
 - Prisma 6, with raw SQL for the atomic claim.
 - SSRF protection on URL ingestion. DNS rebinding is a documented residual risk.
+- Residual risk: for adapters without an idempotency key, a crash between send and record cannot be resolved automatically. It is detected, flagged, and never auto-resent.
