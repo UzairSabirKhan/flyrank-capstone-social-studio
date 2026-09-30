@@ -9,7 +9,14 @@ export function createPublishRouter(publisher: SocialPublisher) {
   router.post('/:id/publish', async (req, res) => {
     const result = await publishSlot(req.params.id, publisher);
     const slot = await getSlot(req.params.id);
-    const status = result.outcome === 'skipped' ? 409 : result.outcome === 'failed' ? 502 : 200;
+    const status =
+      result.outcome === 'skipped'
+        ? 409
+        : result.outcome === 'failed'
+          ? 502
+          : result.outcome === 'retry_scheduled'
+            ? 202
+            : 200;
     res.status(status).json({ outcome: result.outcome, slot });
   });
 

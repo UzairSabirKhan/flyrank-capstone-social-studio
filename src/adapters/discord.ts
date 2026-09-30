@@ -10,7 +10,7 @@ const MAX_LENGTH = 2000; // Discord's message limit; counted in UTF-16 units to 
 export class DiscordPublisher implements SocialPublisher {
   readonly name = 'discord';
   readonly dedupesByKey = false; // webhooks have no idempotency key
-
+  readonly maxLength = MAX_LENGTH;
   constructor(
     private readonly webhookUrl: string,
     private readonly guildId?: string,
@@ -38,7 +38,7 @@ export class DiscordPublisher implements SocialPublisher {
       throw new PublishError('Discord did not respond (timeout or network error)', 'unknown');
     }
 
-    if (res.status === 429) throw new PublishError('Discord rate limit hit', 'rejected');
+    if (res.status === 429) throw new PublishError('Discord rate limit hit', 'rejected', true);
     if (res.status >= 400 && res.status < 500) {
       throw new PublishError(`Discord rejected the post (status ${res.status})`, 'rejected');
     }

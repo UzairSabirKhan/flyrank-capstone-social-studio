@@ -13,7 +13,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "db:migrate": "prisma migrate dev",
-    "db:test:migrate": "cross-env DATABASE_URL=postgresql://studio:studio@localhost:5432/studio_test prisma migrate deploy"
+    "db:test:migrate": "cross-env DATABASE_URL=postgresql://studio:studio@localhost:5432/studio_test prisma migrate deploy",
+    "prove:crash": "tsx scripts/prove-crash-safety.ts",
+    "seed": "tsx scripts/seed.ts"
   },
   "repository": {
     "type": "git",
@@ -35,6 +37,7 @@
     "express-rate-limit": "^8.7.0",
     "helmet": "^8.3.0",
     "jsdom": "^29.1.1",
+    "pg-boss": "^12.35.0",
     "pino": "^10.3.1",
     "turndown": "^7.2.4",
     "zod": "^4.6.5"

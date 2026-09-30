@@ -5,13 +5,14 @@ import type {
   SocialPublisher,
 } from '../src/adapters/SocialPublisher';
 
-/** Deliberately NOT idempotent, so the tests prove the claim does the protecting. */
 export class CountingPublisher implements SocialPublisher {
   readonly name = 'counting';
-  readonly dedupesByKey = false;
   readonly calls: PublishInput[] = [];
 
-  constructor(private readonly failWith?: PublishError) {}
+  constructor(
+    private readonly failWith?: PublishError,
+    readonly dedupesByKey = false,
+  ) {}
 
   async publish(input: PublishInput): Promise<PublishResult> {
     this.calls.push(input);

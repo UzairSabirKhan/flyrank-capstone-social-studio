@@ -1,3 +1,13 @@
+x-app: &app
+  build: .
+  image: studio-app
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    NODE_ENV: production
+    DATABASE_URL: postgresql://studio:studio@postgres:5432/studio
+
 services:
   postgres:
     image: postgres:16
@@ -14,6 +24,35 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  migrate:
+    <<: *app
+    command: ['npx', 'prisma', 'migrate', 'deploy']
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    <<: *app
+    command: ['npx', 'tsx', 'src/api.ts']
+    ports:
+      - '3000:3000'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  worker:
+    <<: *app
+    command: ['npx', 'tsx', 'src/worker.ts']
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   pgdata:

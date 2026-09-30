@@ -12,17 +12,20 @@ export interface SocialPublisher {
   readonly name: string;
   /** True if publishing twice with the same key can never create two posts. */
   readonly dedupesByKey: boolean;
+  readonly maxLength?: number;
   publish(input: PublishInput): Promise<PublishResult>;
 }
 
 /**
  * kind 'rejected': the platform definitely did NOT create the post (4xx, rate limit).
  * kind 'unknown':  the post MAY exist (timeout, network error, 5xx).
+ * retryable: a 'rejected' error that may succeed later (for example a rate limit).
  */
 export class PublishError extends Error {
   constructor(
     message: string,
     public readonly kind: 'rejected' | 'unknown',
+    public readonly retryable = false,
   ) {
     super(message);
   }

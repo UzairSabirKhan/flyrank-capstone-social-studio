@@ -39,3 +39,15 @@ export async function createSlot(app: Express) {
     .send({ scheduledAt: inMinutes(5) });
   return { variantId, slotId: res.body.slot.id as string };
 }
+
+export const makeDue = (slotId: string) =>
+  prisma.slot.update({ where: { id: slotId }, data: { scheduledAt: new Date(Date.now() - 1000) } });
+
+/** Simulate a worker that died right after claiming: 'publishing', old claimedAt, open attempt. */
+export async function makeStale(slotId: string, ageMs = 10 * 60_000) {
+  await prisma.slot.update({
+    where: { id: slotId },
+    data: { status: 'publishing', claimedAt: new Date(Date.now() - ageMs) },
+  });
+  await prisma.publishAttempt.create({ data: { slotId } });
+}
